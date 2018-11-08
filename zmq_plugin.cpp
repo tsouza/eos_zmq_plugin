@@ -16,11 +16,11 @@
 namespace {
   const char* SENDER_BIND = "zmq-sender-bind";
   const char* SENDER_BIND_DEFAULT = "tcp://127.0.0.1:5556";
-  const int32_t MSGTYPE_ACTION_TRACE = 0;
-  const int32_t MSGTYPE_IRREVERSIBLE_BLOCK = 1;
-  const int32_t MSGTYPE_FORK = 2;
-  const int32_t MSGTYPE_ACCEPTED_BLOCK = 3;
-  const int32_t MSGTYPE_FAILED_TX = 4;
+  const std::string MSGTYPE_ACTION_TRACE = "action_trace";
+  const std::string MSGTYPE_IRREVERSIBLE_BLOCK = "irreversible_block";
+  const std::string MSGTYPE_FORK = "fork";
+  const std::string MSGTYPE_ACCEPTED_BLOCK = "accepted_block";
+  const std::string MSGTYPE_FAILED_TX = "failed_tx";
 }
 
 namespace zmqplugin {
@@ -156,6 +156,7 @@ namespace zmqplugin {
   struct zmq_accepted_block_object {
     block_num_type               accepted_block_num;
     digest_type                  accepted_block_digest;
+    fc::variant                  block;
   };
 
   // see status definitions in libraries/chain/include/eosio/chain/block.hpp
@@ -205,24 +206,27 @@ namespace eosio {
         system_accounts.insert(n);
       }
 
-      blacklist_actions.emplace
+      /*blacklist_actions.emplace
         (std::make_pair(chain::config::system_account_name,
                         std::set<name>{ N(onblock) } ));
       blacklist_actions.emplace
         (std::make_pair(N(blocktwitter),
-                        std::set<name>{ N(tweet) } ));
+                        std::set<name>{ N(tweet) } ));*/
     }
 
 
-    void send_msg( const string content, int32_t msgtype, int32_t msgopts)
+    void send_msg( const string content, const string msgtype, int32_t msgopts)
     {
-      zmq::message_t message(content.length()+sizeof(msgtype)+sizeof(msgopts));
+      string part1 = "{\"type\":\"";
+      string part2 = "\",\"body\":";
+      string part3 = "}";
+
+      string result = part1 + msgtype + part2 + content + part3;
+
+      zmq::message_t message(result.length());
       unsigned char* ptr = (unsigned char*) message.data();
-      memcpy(ptr, &msgtype, sizeof(msgtype));
-      ptr += sizeof(msgtype);
-      memcpy(ptr, &msgopts, sizeof(msgopts));
-      ptr += sizeof(msgopts);
-      memcpy(ptr, content.c_str(), content.length());
+      memcpy(ptr, result.c_str(), result.length());
+
       sender_socket.send(message);
     }
 
@@ -248,9 +252,12 @@ namespace eosio {
       _end_block = block_num;
 
       {
+        auto& chain = chain_plug->chain();
+
         zmq_accepted_block_object zabo;
         zabo.accepted_block_num = block_num;
         zabo.accepted_block_digest = block_state->block->digest();
+        zabo.block = chain.to_variant_with_abi(block_state->block, abi_serializer_max_time);
         send_msg(fc::json::to_string(zabo), MSGTYPE_ACCEPTED_BLOCK, 0);
       }
 
@@ -599,7 +606,7 @@ namespace eosio {
       (SENDER_BIND, bpo::value<string>()->default_value(SENDER_BIND_DEFAULT),
        "ZMQ Sender Socket binding");
   }
-
+  
   void zmq_plugin::plugin_initialize(const variables_map& options)
   {
     my->socket_bind_str = options.at(SENDER_BIND).as<string>();
@@ -699,7 +706,7 @@ FC_REFLECT( zmqplugin::zmq_fork_block_object,
             (invalid_block_num) )
 
 FC_REFLECT( zmqplugin::zmq_accepted_block_object,
-            (accepted_block_num)(accepted_block_digest) )
+            (accepted_block_num)(accepted_block_digest)(block) )
 
 FC_REFLECT( zmqplugin::zmq_failed_transaction_object,
             (trx_id)(block_num)(status_name)(status_int) )
