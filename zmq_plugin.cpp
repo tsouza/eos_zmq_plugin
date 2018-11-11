@@ -218,7 +218,7 @@ namespace eosio {
     void send_msg( const string content, const string msgtype, int32_t msgopts)
     {
       string part1 = "{\"type\":\"";
-      string part2 = "\",\"body\":";
+      string part2 = "\",\"" + msgtype + "\":";
       string part3 = "}";
 
       string result = part1 + msgtype + part2 + content + part3;
