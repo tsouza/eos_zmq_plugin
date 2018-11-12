@@ -257,7 +257,7 @@ namespace eosio {
         zmq_accepted_block_object zabo;
         zabo.accepted_block_num = block_num;
         zabo.accepted_block_digest = block_state->block->digest();
-        zabo.block = chain.to_variant_with_abi(block_state->accepted_block, abi_serializer_max_time);
+        zabo.accepted_block = chain.to_variant_with_abi(block_state->block, abi_serializer_max_time);
         send_msg(fc::json::to_string(zabo), MSGTYPE_ACCEPTED_BLOCK, 0);
       }
 
