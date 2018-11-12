@@ -156,7 +156,7 @@ namespace zmqplugin {
   struct zmq_accepted_block_object {
     block_num_type               accepted_block_num;
     digest_type                  accepted_block_digest;
-    fc::variant                  block;
+    fc::variant                  accepted_block;
   };
 
   // see status definitions in libraries/chain/include/eosio/chain/block.hpp
@@ -706,7 +706,7 @@ FC_REFLECT( zmqplugin::zmq_fork_block_object,
             (invalid_block_num) )
 
 FC_REFLECT( zmqplugin::zmq_accepted_block_object,
-            (accepted_block_num)(accepted_block_digest)(block) )
+            (accepted_block_num)(accepted_block_digest)(accepted_block) )
 
 FC_REFLECT( zmqplugin::zmq_failed_transaction_object,
             (trx_id)(block_num)(status_name)(status_int) )
