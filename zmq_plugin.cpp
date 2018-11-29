@@ -316,7 +316,7 @@ namespace eosio {
       zao.block_time = block_state->block->timestamp;
       zao.action_trace = chain.to_variant_with_abi(at, abi_serializer_max_time);
 
-      std::set<name> accounts;
+      /*std::set<name> accounts;
       assetmoves asset_moves;
 
       find_accounts_and_tokens(at, accounts, asset_moves);
@@ -383,7 +383,7 @@ namespace eosio {
             }
           }
         }
-      }
+      }*/
 
       zao.last_irreversible_block = chain.last_irreversible_block_num();
       send_msg(fc::json::to_string(zao), MSGTYPE_ACTION_TRACE, 0);
@@ -697,7 +697,7 @@ FC_REFLECT( zmqplugin::currency_balance,
 
 FC_REFLECT( zmqplugin::zmq_action_object,
             (global_action_seq)(block_num)(block_time)(action_trace)
-            (resource_balances)(currency_balances)(last_irreversible_block) )
+            (last_irreversible_block) )
 
 FC_REFLECT( zmqplugin::zmq_irreversible_block_object,
             (irreversible_block_num)(irreversible_block_digest) )
