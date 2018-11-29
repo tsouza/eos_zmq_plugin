@@ -206,10 +206,10 @@ namespace eosio {
         system_accounts.insert(n);
       }
 
-      /*blacklist_actions.emplace
+      blacklist_actions.emplace
         (std::make_pair(chain::config::system_account_name,
                         std::set<name>{ N(onblock) } ));
-      blacklist_actions.emplace
+      /*blacklist_actions.emplace
         (std::make_pair(N(blocktwitter),
                         std::set<name>{ N(tweet) } ));*/
     }
