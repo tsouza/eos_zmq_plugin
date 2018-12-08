@@ -193,8 +193,8 @@ namespace eosio {
     fc::optional<scoped_connection> irreversible_block_connection;
 
     zmq_plugin_impl():
-      context(1),
-      sender_socket(context, ZMQ_PUSH)
+    context(1),
+    sender_socket(context, ZMQ_PUSH)
     {
       std::vector<name> sys_acc_names = {
         chain::config::system_account_name,
@@ -206,12 +206,7 @@ namespace eosio {
         system_accounts.insert(n);
       }
 
-      blacklist_actions.emplace
-        (std::make_pair(chain::config::system_account_name,
-                        std::set<name>{ N(onblock) } ));
-      /*blacklist_actions.emplace
-        (std::make_pair(N(blocktwitter),
-                        std::set<name>{ N(tweet) } ));*/
+      blacklist_actions.emplace(std::make_pair(chain::config::system_account_name,std::set<name>{ N(onblock) } ));
     }
 
 
@@ -400,15 +395,15 @@ namespace eosio {
 
 
     void inline add_asset_move(assetmoves& asset_moves, account_name contract,
-                               symbol symbol, account_name owner)
+     symbol symbol, account_name owner)
     {
       asset_moves[contract][symbol].insert(owner);
     }
 
 
     void find_accounts_and_tokens(const action_trace& at,
-                                  std::set<name>& accounts,
-                                  assetmoves& asset_moves)
+      std::set<name>& accounts,
+      assetmoves& asset_moves)
     {
       accounts.insert(at.act.account);
 
@@ -418,49 +413,49 @@ namespace eosio {
 
       if( at.act.account == config::system_account_name ) {
         switch((uint64_t) at.act.name) {
-        case N(newaccount):
+          case N(newaccount):
           {
             const auto data = fc::raw::unpack<chain::newaccount>(at.act.data);
             accounts.insert(data.name);
           }
           break;
-        case N(setcode):
+          case N(setcode):
           {
             const auto data = fc::raw::unpack<chain::setcode>(at.act.data);
             accounts.insert(data.account);
           }
           break;
-        case N(setabi):
+          case N(setabi):
           {
             const auto data = fc::raw::unpack<chain::setabi>(at.act.data);
             accounts.insert(data.account);
           }
           break;
-        case N(updateauth):
+          case N(updateauth):
           {
             const auto data = fc::raw::unpack<chain::updateauth>(at.act.data);
             accounts.insert(data.account);
           }
           break;
-        case N(deleteauth):
+          case N(deleteauth):
           {
             const auto data = fc::raw::unpack<chain::deleteauth>(at.act.data);
             accounts.insert(data.account);
           }
           break;
-        case N(linkauth):
+          case N(linkauth):
           {
             const auto data = fc::raw::unpack<chain::linkauth>(at.act.data);  
             accounts.insert(data.account);
           }
           break;
-        case N(unlinkauth):
+          case N(unlinkauth):
           {
             const auto data = fc::raw::unpack<chain::unlinkauth>(at.act.data);  
             accounts.insert(data.account);
           }
           break;
-        case N(buyrambytes):
+          case N(buyrambytes):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::buyrambytes>(at.act.data);  
             accounts.insert(data.payer);
@@ -469,7 +464,7 @@ namespace eosio {
             }
           }
           break;
-        case N(buyram):
+          case N(buyram):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::buyram>(at.act.data);  
             accounts.insert(data.payer);
@@ -478,13 +473,13 @@ namespace eosio {
             }
           }
           break;
-        case N(sellram):
+          case N(sellram):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::sellram>(at.act.data);  
             accounts.insert(data.account);
           }
           break;
-        case N(delegatebw):
+          case N(delegatebw):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::delegatebw>(at.act.data);  
             accounts.insert(data.from);
@@ -493,7 +488,7 @@ namespace eosio {
             }
           }
           break;
-        case N(undelegatebw):
+          case N(undelegatebw):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::undelegatebw>(at.act.data);  
             accounts.insert(data.from);
@@ -502,36 +497,36 @@ namespace eosio {
             }
           }
           break;
-        case N(refund):
+          case N(refund):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::refund>(at.act.data);  
             accounts.insert(data.owner);
           }
           break;
-        case N(regproducer):
+          case N(regproducer):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::regproducer>(at.act.data);  
             accounts.insert(data.producer);
           }
           break;
-        case N(bidname):
+          case N(bidname):
           {
             // do nothing because newname account does not exist yet
           }
           break;
-        case N(unregprod):
+          case N(unregprod):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::unregprod>(at.act.data);  
             accounts.insert(data.producer);
           }
           break;
-        case N(regproxy):
+          case N(regproxy):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::regproxy>(at.act.data);  
             accounts.insert(data.proxy);
           }
           break;
-        case N(voteproducer):
+          case N(voteproducer):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::voteproducer>(at.act.data);  
             accounts.insert(data.voter);
@@ -541,7 +536,7 @@ namespace eosio {
             // not including the producrs list, although some projects may need it
           }
           break;
-        case N(claimrewards):
+          case N(claimrewards):
           {
             const auto data = fc::raw::unpack<zmqplugin::syscontract::claimrewards>(at.act.data);  
             accounts.insert(data.owner);
@@ -551,7 +546,7 @@ namespace eosio {
       }
       else {
         switch((uint64_t) at.act.name) {
-        case N(transfer):
+          case N(transfer):
           {
             const auto data = fc::raw::unpack<zmqplugin::token::transfer>(at.act.data);
             symbol s = data.quantity.get_symbol();
@@ -561,7 +556,7 @@ namespace eosio {
             }
           }
           break;
-        case N(issue):
+          case N(issue):
           {
             const auto data = fc::raw::unpack<zmqplugin::token::issue>(at.act.data);
             symbol s = data.quantity.get_symbol();
@@ -570,7 +565,7 @@ namespace eosio {
             }
           }
           break;
-        case N(open):
+          case N(open):
           {
             const auto data = fc::raw::unpack<zmqplugin::token::open>(at.act.data);
             if( data.symbol.valid() ) {
@@ -603,8 +598,10 @@ namespace eosio {
   void zmq_plugin::set_program_options(options_description&, options_description& cfg)
   {
     cfg.add_options()
-      (SENDER_BIND, bpo::value<string>()->default_value(SENDER_BIND_DEFAULT),
-       "ZMQ Sender Socket binding");
+    (SENDER_BIND, bpo::value<string>()->default_value(SENDER_BIND_DEFAULT),
+      "ZMQ Sender Socket binding")
+    ("zmq-action-blacklist", bpo::value<vector<string>>()->composing()->multitoken(),
+      "Action (in the form code::action) added to zmq action blacklist (may specify multiple times)");
   }
   
   void zmq_plugin::plugin_initialize(const variables_map& options)
@@ -615,98 +612,110 @@ namespace eosio {
       return;
     }
 
-    ilog("Binding to ZMQ PUSH socket ${u}", ("u", my->socket_bind_str));
-    my->sender_socket.bind(my->socket_bind_str);
-
-    my->chain_plug = app().find_plugin<chain_plugin>();
-    my->abi_serializer_max_time = my->chain_plug->get_abi_serializer_max_time();
-
-    auto& chain = my->chain_plug->chain();
-
-    my->applied_transaction_connection.emplace
-      ( chain.applied_transaction.connect( [&]( const transaction_trace_ptr& p ){
-          my->on_applied_transaction(p);  }));
-
-    my->accepted_block_connection.emplace
-      ( chain.accepted_block.connect([&](const block_state_ptr& p) {
-          my->on_accepted_block(p); }));
-
-    my->irreversible_block_connection.emplace
-      ( chain.irreversible_block.connect( [&]( const chain::block_state_ptr& bs ) {
-          my->on_irreversible_block( bs ); } ));
-  }
-
-  void zmq_plugin::plugin_startup() {
-  }
-
-  void zmq_plugin::plugin_shutdown() {
-    if( ! my->socket_bind_str.empty() ) {
-      my->sender_socket.disconnect(my->socket_bind_str);
-      my->sender_socket.close();
+    if( options.count( "zmq-action-blacklist" )) {
+     const vector<string>& acts = options["zmq-action-blacklist"].as<vector<string>>();
+     auto& list = my->blacklist_actions;
+     for( const auto& a : acts ) {
+      auto pos = a.find( "::" );
+      EOS_ASSERT( pos != string::npos, plugin_config_exception, "Invalid entry in zmq-action-blacklist: '${a}'", ("a", a));
+      account_name code( a.substr( 0, pos ));
+      account_name act( a.substr( pos + 2 ));
+      list.emplace(make_pair( N(code.value),std::set<account_name>{ act } ));
     }
   }
+
+  ilog("Binding to ZMQ PUSH socket ${u}", ("u", my->socket_bind_str));
+  my->sender_socket.bind(my->socket_bind_str);
+
+  my->chain_plug = app().find_plugin<chain_plugin>();
+  my->abi_serializer_max_time = my->chain_plug->get_abi_serializer_max_time();
+
+  auto& chain = my->chain_plug->chain();
+
+  my->applied_transaction_connection.emplace
+  ( chain.applied_transaction.connect( [&]( const transaction_trace_ptr& p ){
+    my->on_applied_transaction(p);  }));
+
+  my->accepted_block_connection.emplace
+  ( chain.accepted_block.connect([&](const block_state_ptr& p) {
+    my->on_accepted_block(p); }));
+
+  my->irreversible_block_connection.emplace
+  ( chain.irreversible_block.connect( [&]( const chain::block_state_ptr& bs ) {
+    my->on_irreversible_block( bs ); } ));
+}
+
+void zmq_plugin::plugin_startup() {
+}
+
+void zmq_plugin::plugin_shutdown() {
+  if( ! my->socket_bind_str.empty() ) {
+    my->sender_socket.disconnect(my->socket_bind_str);
+    my->sender_socket.close();
+  }
+}
 }
 
 FC_REFLECT( zmqplugin::syscontract::buyrambytes,
-            (payer)(receiver)(bytes) )
+  (payer)(receiver)(bytes) )
 
 FC_REFLECT( zmqplugin::syscontract::buyram,
-            (payer)(receiver)(quant) )
+  (payer)(receiver)(quant) )
 
 FC_REFLECT( zmqplugin::syscontract::sellram,
-            (account)(bytes) )
+  (account)(bytes) )
 
 FC_REFLECT( zmqplugin::syscontract::delegatebw,
-            (from)(receiver)(stake_net_quantity)(stake_cpu_quantity)(transfer) )
+  (from)(receiver)(stake_net_quantity)(stake_cpu_quantity)(transfer) )
 
 FC_REFLECT( zmqplugin::syscontract::undelegatebw,
-            (from)(receiver)(unstake_net_quantity)(unstake_cpu_quantity) )
+  (from)(receiver)(unstake_net_quantity)(unstake_cpu_quantity) )
 
 FC_REFLECT( zmqplugin::syscontract::refund,
-            (owner) )
+  (owner) )
 
 FC_REFLECT( zmqplugin::syscontract::regproducer,
-            (producer)(producer_key)(url)(location) )
+  (producer)(producer_key)(url)(location) )
 
 FC_REFLECT( zmqplugin::syscontract::unregprod,
-            (producer) )
+  (producer) )
 
 FC_REFLECT( zmqplugin::syscontract::regproxy,
-            (proxy)(isproxy) )
+  (proxy)(isproxy) )
 
 FC_REFLECT( zmqplugin::syscontract::voteproducer,
-            (voter)(proxy)(producers) )
+  (voter)(proxy)(producers) )
 
 FC_REFLECT( zmqplugin::syscontract::claimrewards,
-            (owner) )
+  (owner) )
 
 FC_REFLECT( zmqplugin::token::transfer,
-            (from)(to)(quantity)(memo) )
+  (from)(to)(quantity)(memo) )
 
 FC_REFLECT( zmqplugin::token::issue,
-            (to)(quantity)(memo) )
+  (to)(quantity)(memo) )
 
 FC_REFLECT( zmqplugin::token::open,
-            (owner)(symbol)(ram_payer) )
+  (owner)(symbol)(ram_payer) )
 
 FC_REFLECT( zmqplugin::resource_balance,
-            (account_name)(ram_quota)(ram_usage)(net_weight)(cpu_weight)(net_limit)(cpu_limit) )
+  (account_name)(ram_quota)(ram_usage)(net_weight)(cpu_weight)(net_limit)(cpu_limit) )
 
 FC_REFLECT( zmqplugin::currency_balance,
-            (account_name)(contract)(balance)(deleted))
+  (account_name)(contract)(balance)(deleted))
 
 FC_REFLECT( zmqplugin::zmq_action_object,
-            (global_action_seq)(block_num)(block_time)(action_trace)
-            (last_irreversible_block) )
+  (global_action_seq)(block_num)(block_time)(action_trace)
+  (last_irreversible_block) )
 
 FC_REFLECT( zmqplugin::zmq_irreversible_block_object,
-            (irreversible_block_num)(irreversible_block_digest) )
+  (irreversible_block_num)(irreversible_block_digest) )
 
 FC_REFLECT( zmqplugin::zmq_fork_block_object,
-            (invalid_block_num) )
+  (invalid_block_num) )
 
 FC_REFLECT( zmqplugin::zmq_accepted_block_object,
-            (accepted_block_num)(accepted_block_digest)(accepted_block) )
+  (accepted_block_num)(accepted_block_digest)(accepted_block) )
 
 FC_REFLECT( zmqplugin::zmq_failed_transaction_object,
-            (trx_id)(block_num)(status_name)(status_int) )
+  (trx_id)(block_num)(status_name)(status_int) )
